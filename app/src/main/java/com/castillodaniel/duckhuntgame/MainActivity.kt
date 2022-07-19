@@ -1,10 +1,16 @@
 package com.castillodaniel.duckhuntgame
 
+import android.app.Activity
+import android.content.Intent
 import android.media.MediaPlayer
+import android.net.Uri
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.os.CountDownTimer
 import android.os.Handler
+import android.view.Menu
+import android.view.MenuInflater
+import android.view.MenuItem
 import android.widget.ImageView
 import android.widget.TextView
 import androidx.appcompat.app.AlertDialog
@@ -27,11 +33,12 @@ class MainActivity : AppCompatActivity() {
         textViewContador = findViewById(R.id.textViewContador)
         textViewTiempo = findViewById(R.id.textViewTiempo)
         imageViewPato = findViewById(R.id.imageViewPato)
+        //menu
 
         //Obtener el usuario de pantalla login
         val extras = intent.extras ?: return
-        val usuario = extras.getString(EXTRA_LOGIN) ?:"Unknown"
-        textViewUsuario.setText(usuario)
+        val usuario = extras.getString(EXTRA_LOGIN) ?: "Unknown"
+        textViewUsuario.setText(usuario.substringBefore("@",usuario))
 
         //Determina el ancho y largo de pantalla
         inicializarPantalla()
@@ -50,7 +57,52 @@ class MainActivity : AppCompatActivity() {
                 moverPato()
             }, 500)
         }
+        //navigate up
+        getSupportActionBar()?.setDisplayHomeAsUpEnabled(true);
+
     }
+    override fun onCreateOptionsMenu(menu: Menu): Boolean {
+        val inflater: MenuInflater = menuInflater
+        inflater.inflate(R.menu.mymenu, menu)
+        return true
+    }
+
+    override fun onSupportNavigateUp(): Boolean {
+        onBackPressed();
+        val intencion = Intent(this, LoginActivity::class.java)
+        startActivity(intencion)
+        return true;
+
+    }
+
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        return when(item.itemId){
+            android.R.id.home -> {
+                val intencion = Intent(this, LoginActivity::class.java)
+                startActivity(intencion)
+                return true
+            }
+            R.id.item_nuevoJuego -> {
+                finish();
+                startActivity(getIntent());
+                return true
+            }
+            R.id.item_Salir -> {
+                val intencion = Intent(this, LoginActivity::class.java)
+                startActivity(intencion)
+                return true
+            }
+            R.id.item_jugarOnline -> {
+                 val url : String = "https://duckhuntjs.com"
+                 val i : Intent = Intent(Intent.ACTION_VIEW);
+                i.setData(Uri.parse(url));
+                startActivity(i);
+                return true
+            }
+            else -> return true
+        }
+    }
+
     private fun inicializarPantalla() {
         // 1. Obtenemos el tamaño de la pantalla del dispositivo
         val display = this.resources.displayMetrics
@@ -59,7 +111,7 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun moverPato() {
-        val min = imageViewPato.getWidth()/2
+        val min = imageViewPato.getWidth() / 2
         val maximoX = anchoPantalla - imageViewPato.getWidth()
         val maximoY = alturaPantalla - imageViewPato.getHeight()
         // Generamos 2 números aleatorios, para la coordenadas x , y
@@ -70,22 +122,27 @@ class MainActivity : AppCompatActivity() {
         imageViewPato.setX(randomX.toFloat())
         imageViewPato.setY(randomY.toFloat())
     }
+
     var contadorTiempo = object : CountDownTimer(10000, 1000) {
         override fun onTick(millisUntilFinished: Long) {
             val segundosRestantes = millisUntilFinished / 1000
             textViewTiempo.setText("${segundosRestantes}s")
         }
+
         override fun onFinish() {
             textViewTiempo.setText("0s")
             gameOver = true
             mostrarDialogoGameOver()
         }
     }
+
     private fun inicializarCuentaRegresiva() {
         contadorTiempo.start()
     }
+
     private fun mostrarDialogoGameOver() {
         val builder = AlertDialog.Builder(this)
+        builder.setIcon(R.drawable.duck)
         builder
             .setMessage("Felicidades!!\nHas conseguido cazar $contador patos")
             .setTitle("Fin del juego")
@@ -99,7 +156,8 @@ class MainActivity : AppCompatActivity() {
                 })
         builder.create().show()
     }
-    fun reiniciarJuego(){
+
+    fun reiniciarJuego() {
         contador = 0
         gameOver = false
         contadorTiempo.cancel()
@@ -107,4 +165,5 @@ class MainActivity : AppCompatActivity() {
         moverPato()
         inicializarCuentaRegresiva()
     }
+
 }
