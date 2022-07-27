@@ -4,10 +4,15 @@ import android.content.Intent
 import android.media.MediaPlayer
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.util.Log
 import android.util.Patterns
 import android.widget.Button
 import android.widget.CheckBox
 import android.widget.EditText
+import android.widget.Toast
+import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.auth.ktx.auth
+import com.google.firebase.ktx.Firebase
 import java.util.regex.Pattern
 
 class LoginActivity : AppCompatActivity() {
@@ -18,6 +23,7 @@ class LoginActivity : AppCompatActivity() {
     lateinit var checkBoxRecordarme: CheckBox
     lateinit var buttonNewUser:Button
     lateinit var mediaPlayer: MediaPlayer
+    private lateinit var auth: FirebaseAuth
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_login)
@@ -29,7 +35,8 @@ class LoginActivity : AppCompatActivity() {
         buttonLogin = findViewById(R.id.buttonLogin)
         buttonNewUser = findViewById(R.id.buttonNewUser)
         LeerDatosPreferencias()
-
+        // Initialize Firebase
+         auth = Firebase.auth
 
 
         //Eventos clic
@@ -41,9 +48,8 @@ class LoginActivity : AppCompatActivity() {
             if(!ValidarDatosRequeridos())
                 return@setOnClickListener
             //Si pasa validación de datos requeridos, ir a pantalla principal
-            val intencion = Intent(this, MainActivity::class.java)
-            intencion.putExtra(EXTRA_LOGIN, email)
-            startActivity(intencion)
+
+            AutenticarUsuario(email, clave)
         }
         buttonNewUser.setOnClickListener{
 
@@ -107,4 +113,22 @@ class LoginActivity : AppCompatActivity() {
         val pattern : Pattern = Patterns.EMAIL_ADDRESS;
         return pattern.matcher(email).matches()
     }
+    fun AutenticarUsuario(email:String, password:String){
+        auth.signInWithEmailAndPassword(email, password)
+            .addOnCompleteListener(this) { task ->
+                if (task.isSuccessful) {
+                    Log.d(EXTRA_LOGIN, "signInWithEmail:success")
+                    //Si pasa validación de datos requeridos, ir a pantalla principal
+                    val intencion = Intent(this, MainActivity::class.java)
+                    intencion.putExtra(EXTRA_LOGIN, auth.currentUser!!.email)
+                    startActivity(intencion)
+                    //finish()
+                } else {
+                    Log.w(EXTRA_LOGIN, "signInWithEmail:failure", task.exception)
+                    Toast.makeText(baseContext, task.exception!!.message,
+                        Toast.LENGTH_SHORT).show()
+                }
+            }
+    }
+
 }
