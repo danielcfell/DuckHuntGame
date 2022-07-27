@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "1076426636884",
+    "project_id": "duckhunt-6aa91",
+    "storage_bucket": "duckhunt-6aa91.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:1076426636884:android:9991bcd437ed521578f7c1",
+        "android_client_info": {
+          "package_name": "com.castillodaniel.duckhuntgame"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "1076426636884-o2apn0u1mceom928db7ri7j0kjjpvcso.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAyWCCoL1a79AtHWS99ORRSrCGTO9kic2o"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "1076426636884-o2apn0u1mceom928db7ri7j0kjjpvcso.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
