@@ -2,7 +2,9 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     package="com.castillodaniel.duckhuntgame">
-
+   <uses-permission android:name="android.permission.INTERNET"></uses-permission>
+    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE"></uses-permission>
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE"></uses-permission>
     <application
         android:allowBackup="true"
         android:dataExtractionRules="@xml/data_extraction_rules"
@@ -13,28 +15,36 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.DuckHuntGame.Personalizado"
         tools:targetApi="31">
+
         <activity
             android:name=".RankingActivity"
-            android:parentActivityName=".MainActivity"
-            android:exported="false">
-
-
+            android:exported="false"
+            android:parentActivityName=".MainActivity">
         </activity>
+
         <activity
             android:name=".LoginActivity"
             android:exported="true">
+
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
-
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
 
         </activity>
+
         <activity android:name=".MainActivity"></activity>
 
+        
         <meta-data
             android:name="preloaded_fonts"
             android:resource="@array/preloaded_fonts" />
+
+
+        <meta-data
+            android:name="com.google.android.gms.ads.APPLICATION_ID"
+            android:value="ca-app-pub-5715532407079481~5430438733" />
+
     </application>
 
 </manifest>

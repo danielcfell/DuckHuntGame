@@ -16,6 +16,10 @@ import android.widget.ImageView
 import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
+import com.google.android.gms.ads.AdRequest
+import com.google.android.gms.ads.AdSize
+import com.google.android.gms.ads.AdView
+import com.google.android.gms.ads.MobileAds
 import com.google.firebase.firestore.ktx.firestore
 import com.google.firebase.ktx.Firebase
 import java.util.*
@@ -29,6 +33,8 @@ class MainActivity : AppCompatActivity() {
     var anchoPantalla = 0
     var alturaPantalla = 0
     var gameOver = false
+    lateinit var mAdView : AdView
+    private var mediaPlayer : MediaPlayer ?=null
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
@@ -37,6 +43,22 @@ class MainActivity : AppCompatActivity() {
         textViewContador = findViewById(R.id.textViewContador)
         textViewTiempo = findViewById(R.id.textViewTiempo)
         imageViewPato = findViewById(R.id.imageViewPato)
+        //Ads
+        MobileAds.initialize(this) {}
+        //ads inicializacion  y carga
+        mAdView = findViewById(R.id.adView)
+        val adRequest = AdRequest.Builder().build()
+        mAdView.loadAd(adRequest)
+
+        val adView = AdView(this)
+
+
+
+        //adView.adUnitId = "ca-app-pub-3940256099942544/6300978111"
+
+        //adView.adUnitID=" ca-app-pub-5715532407079481/9704176923" // colocar en la playstore
+
+
         //menu
 
         //Obtener el usuario de pantalla login
@@ -103,32 +125,19 @@ class MainActivity : AppCompatActivity() {
             val segundosRestantes = millisUntilFinished / 1000
             textViewTiempo.setText("${segundosRestantes}s")
         }
-
         override fun onFinish() {
             textViewTiempo.setText("0s")
             gameOver = true
             mostrarDialogoGameOver()
+            val nombreJugador = textViewUsuario.text.toString()
+            val patosCazados = textViewContador.text.toString()
+            procesarPuntajePatosCazados(nombreJugador, patosCazados.toInt()) //Firestore
+            //procesarPuntajePatosCazadosRTDB(nombreJugador, patosCazados.toInt()) //Realtime Database
         }
     }
-
-
     private fun inicializarCuentaRegresiva() {
-        object : CountDownTimer(10000, 1000) {
-            override fun onTick(millisUntilFinished: Long) {
-                val segundosRestantes = millisUntilFinished / 1000
-                textViewTiempo.setText("${segundosRestantes}s")
-            }
-            override fun onFinish() {
-                textViewTiempo.setText("0s")
-                gameOver = true
-                mostrarDialogoGameOver()
-                val nombreJugador = textViewUsuario.text.toString()
-                val patosCazados = textViewContador.text.toString()
-                procesarPuntajePatosCazados(nombreJugador, patosCazados.toInt())
-            }
-        }.start()
+        contadorTiempo.start()
     }
-
 
     private fun mostrarDialogoGameOver() {
         val builder = AlertDialog.Builder(this)
@@ -237,7 +246,17 @@ class MainActivity : AppCompatActivity() {
             }
     }
 
-
-
+    override fun onStop() {
+        Log.w(EXTRA_LOGIN, "Play canceled")
+        contadorTiempo.cancel()
+        textViewTiempo.text = "0s"
+        gameOver = true
+        mediaPlayer?.stop()
+        super.onStop()
+    }
+    override fun onDestroy() {
+        mediaPlayer?.release()
+        super.onDestroy()
+    }
 
 }

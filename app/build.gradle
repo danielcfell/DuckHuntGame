@@ -63,4 +63,7 @@ dependencies {
 
     // For App Authentication API testing
     androidTestImplementation("androidx.security:security-app-authenticator:1.0.0-alpha01")
+
+    //Ads
+    implementation 'com.google.android.gms:play-services-ads:21.1.0'
 }
